@@ -1,0 +1,72 @@
+@base = http://localhost:3000
+@postId = {{postId}}
+@commentId = {{commentId}}
+
+###
+# Create post
+POST {{base}}/post
+Content-Type: application/json
+
+{
+  "title": "Hello world",
+  "content": "My first post body",
+  "sender": "alice"
+}
+
+###
+# Get all posts
+GET {{base}}/post
+
+###
+# Get posts by sender
+GET {{base}}/post?sender=alice
+
+###
+# Get post by id
+GET {{base}}/post/{{postId}}
+
+###
+# Replace post content
+PUT {{base}}/post/{{postId}}
+Content-Type: application/json
+
+{
+  "title": "Updated title",
+  "content": "Updated content",
+  "sender": "alice"
+}
+
+###
+# Create comment
+POST {{base}}/comment
+Content-Type: application/json
+
+{
+  "post": "{{postId}}",
+  "text": "Nice post!",
+  "author": "bob"
+}
+
+###
+# Get all comments
+GET {{base}}/comment
+
+###
+# Get comments for a post
+GET {{base}}/comment?post={{postId}}
+
+###
+# Update comment
+PUT {{base}}/comment/{{commentId}}
+Content-Type: application/json
+
+{
+  "post": "{{postId}}",
+  "text": "Edited comment text",
+  "author": "bob"
+}
+
+###
+# Delete comment
+DELETE {{base}}/comment/{{commentId}}
+
