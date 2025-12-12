@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node --env-file=.env app.js",
     "dev": "nodemon app.js",
+    "debug": "node --env-file=.env --inspect app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

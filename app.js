@@ -3,21 +3,26 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const routes = require('./routes');
+const connectToMongoDB = require('./mongoose');
 
-const app = express();
-const port = process.env.PORT || 4000;
+async function startServer() {
+  await connectToMongoDB();
 
-app.use(cors());
-app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
-app.use(bodyParser.json());
+  const app = express();
+  const port = process.env.PORT || 4000;
 
-app.use('/', routes);
+  app.use(cors());
+  app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
+  app.use(bodyParser.json());
 
-require('./mongoose');
+  app.use('/', routes);
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
 
-module.exports = app;
+  module.exports = app;
+}
+
+startServer();
 

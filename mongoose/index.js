@@ -1,13 +1,17 @@
 const mongoose = require('mongoose');
 
-mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
+const connectToMongoDB = async () => {
+    const db = mongoose.connection;
+    db.once("open", () => console.log('connected to MongoDB'));
+    db.on("error", (error) => console.error('MongoDB connection error:', error));
 
-const db = mongoose.connection;
+    try {
+        await mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
+    } catch (error) {
+        logger.error("error while trying to connect to mongo db");
+        throw error;
+    }
+};
 
-db.on('error', (error) => 
-        console.error('MongoDB connection error:', error));
-
-db.once('open', () => console.log('connected to MongoDB'));
-
-module.exports = db;
+module.exports = connectToMongoDB;
 

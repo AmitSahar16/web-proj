@@ -8,9 +8,8 @@ POST {{base}}/post
 Content-Type: application/json
 
 {
-  "title": "Hello world",
-  "content": "My first post body",
-  "sender": "alice"
+  "message": "My first post body",
+  "sender": "123456789"
 }
 
 ###
@@ -19,7 +18,7 @@ GET {{base}}/post
 
 ###
 # Get posts by sender
-GET {{base}}/post?sender=alice
+GET {{base}}/post?sender=123456789
 
 ###
 # Get post by id
@@ -31,9 +30,8 @@ PUT {{base}}/post/{{postId}}
 Content-Type: application/json
 
 {
-  "title": "Updated title",
-  "content": "Updated content",
-  "sender": "alice"
+  "message": "Updated message",
+  "sender": "123456789"
 }
 
 ###
@@ -44,7 +42,7 @@ Content-Type: application/json
 {
   "post": "{{postId}}",
   "text": "Nice post!",
-  "author": "bob"
+  "author": "987654321"
 }
 
 ###
@@ -63,7 +61,7 @@ Content-Type: application/json
 {
   "post": "{{postId}}",
   "text": "Edited comment text",
-  "author": "bob"
+  "author": "987654321"
 }
 
 ###

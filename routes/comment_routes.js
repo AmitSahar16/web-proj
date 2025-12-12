@@ -8,9 +8,12 @@ const {
 
 const router = express.Router();
 
-router.post('/', createComment);
 router.get('/', getComments);
+
+router.post('/', createComment);
+
 router.put('/:id', updateComment);
+
 router.delete('/:id', deleteComment);
 
 module.exports = router;

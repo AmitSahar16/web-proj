@@ -15,9 +15,13 @@ const commentSchema = new Schema(
       type: String, 
       required: true,
     },
+    _id: {
+      type: Schema.Types.ObjectId,
+      default: () => new mongoose.Types.ObjectId(),
+      required: true,
+    },
   },
-  { timestamps: true }
 );
 
-module.exports = model('Comment', commentSchema);
+module.exports = model('Comment', commentSchema, 'Comment');
 
