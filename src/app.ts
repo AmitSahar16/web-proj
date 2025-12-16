@@ -1,60 +1,14 @@
 import express from 'express';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import swaggerUi from 'swagger-ui-express';
-import swaggerJsdoc from 'swagger-jsdoc';
-import routes from './routes';
-import connectToMongoDB from './mongoose';
+import { configExpress } from './config/express';
+import { configMongo } from './config/mongo';
 
 const app = express();
-const port = process.env.PORT || 4000;
-
-// Swagger configuration
-const swaggerOptions = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Fullstack Project API',
-      version: '1.0.0',
-      description: 'REST API with JWT authentication, CRUD operations for Users, Posts, and Comments',
-    },
-    servers: [
-      {
-        url: `http://localhost:${port}`,
-        description: 'Development server',
-      },
-    ],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-        },
-      },
-    },
-    security: [
-      {
-        bearerAuth: [],
-      },
-    ],
-  },
-  apis: ['./src/routes/*.ts', './src/controllers/*.ts'],
-};
-
-const swaggerSpec = swaggerJsdoc(swaggerOptions);
+const port = Number(process.env.PORT) || 3000;
 
 async function startServer() {
-  await connectToMongoDB();
+  configExpress(app, port);
 
-  app.use(cors());
-  app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
-  app.use(bodyParser.json());
-
-  // Swagger UI
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-  app.use('/', routes);
+  await configMongo();
 
   app.listen(port, () => {
     console.log(`Server running on port ${port}`);
