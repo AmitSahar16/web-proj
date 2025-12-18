@@ -1,9 +1,8 @@
 import { Request } from 'express';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
-// User types
 export interface IUser extends Document {
-  _id: string;
+  _id: Types.ObjectId;
   username: string;
   email: string;
   password: string;
@@ -18,11 +17,10 @@ export interface IUserDTO {
   password: string;
 }
 
-// Post types
 export interface IPost extends Document {
-  _id: string;
+  _id: Types.ObjectId;
   message: string;
-  user: string; // User ID reference
+  user: Types.ObjectId; // user id reference
   createdAt: Date;
   updatedAt: Date;
 }
@@ -31,12 +29,11 @@ export interface IPostDTO {
   message: string;
 }
 
-// Comment types
 export interface IComment extends Document {
-  _id: string;
-  post: string; // Post ID reference
+  _id: Types.ObjectId;
+  post: Types.ObjectId; // post id reference
   text: string;
-  user: string; // User ID reference
+  user: Types.ObjectId; // user id reference
   createdAt: Date;
   updatedAt: Date;
 }
@@ -46,16 +43,15 @@ export interface ICommentDTO {
   text: string;
 }
 
-// Auth types
 export interface IAuthRequest extends Request {
   user?: {
-    userId: string;
+    userId: Types.ObjectId;
     username: string;
   };
 }
 
 export interface ITokenPayload {
-  userId: string;
+  userId: Types.ObjectId;
   username: string;
 }
 
@@ -63,7 +59,7 @@ export interface IAuthResponse {
   accessToken: string;
   refreshToken: string;
   user: {
-    id: string;
+    id: Types.ObjectId;
     username: string;
     email: string;
   };
