@@ -11,17 +11,16 @@ export const createPost = async (req: IAuthRequest, res: Response): Promise<void
     const userId = req.user?.userId;
 
     if (!userId) {
-      res.status(401).json({ message: 'Unauthorized' });
-      return;
+      throw Error('Unauthorized');
     }
 
     if (!message) {
-      res.status(400).json({ message: 'Message is required' });
-      return;
+      throw Error('Message is required');
     }
 
     const post = await Post.create({ message, user: userId });
     await post.populate('user', 'username email');
+
     res.status(201).json(post);
   } catch (err: any) {
     res.status(400).json({ message: err.message });
@@ -33,6 +32,7 @@ export const getPosts = async (req: IAuthRequest, res: Response): Promise<void> 
     const userId = req.query.user as string;
     const query = userId ? { user: userId } : {};
     const posts = await Post.find(query).populate('user', 'username email').sort({ createdAt: -1 });
+
     res.json(posts);
   } catch (err: any) {
     res.status(500).json({ message: err.message });
@@ -42,17 +42,15 @@ export const getPosts = async (req: IAuthRequest, res: Response): Promise<void> 
 export const getPostById = async (req: IAuthRequest, res: Response): Promise<void> => {
   const { id } = req.params;
 
-  if (!isValidObjectId(id)) {
-    res.status(400).json({ message: 'Invalid id' });
-    return;
-  }
-
   try {
+    if (!isValidObjectId(id)) {
+      throw Error('Invalid id');
+    }
+
     const post = await Post.findById(id).populate('user', 'username email');
 
     if (!post) {
-      res.status(404).json({ message: 'Post not found' });
-      return;
+      throw Error('Post not found');
     }
 
     res.json(post);
@@ -64,20 +62,18 @@ export const getPostById = async (req: IAuthRequest, res: Response): Promise<voi
 export const updatePost = async (req: IAuthRequest, res: Response): Promise<void> => {
   const { id } = req.params;
 
-  if (!isValidObjectId(id)) {
-    res.status(400).json({ message: 'Invalid id' });
-    return;
-  }
-
   try {
+    if (!isValidObjectId(id)) {
+      throw Error('Invalid id');
+    }
+
     const updated = await Post.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true,
     }).populate('user', 'username email');
 
     if (!updated) {
-      res.status(404).json({ message: 'Post not found' });
-      return;
+      throw Error('Post not found');
     }
 
     res.json(updated);
@@ -89,17 +85,15 @@ export const updatePost = async (req: IAuthRequest, res: Response): Promise<void
 export const deletePost = async (req: IAuthRequest, res: Response): Promise<void> => {
   const { id } = req.params;
 
-  if (!isValidObjectId(id)) {
-    res.status(400).json({ message: 'Invalid id' });
-    return;
-  }
-
   try {
+    if (!isValidObjectId(id)) {
+      throw Error('Invalid id');
+    }
+
     const deleted = await Post.findByIdAndDelete(id);
 
     if (!deleted) {
-      res.status(404).json({ message: 'Post not found' });
-      return;
+      throw Error('Post not found');
     }
 
     res.json({ message: 'Post deleted' });

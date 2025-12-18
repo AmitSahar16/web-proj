@@ -12,29 +12,27 @@ export const createComment = async (req: IAuthRequest, res: Response): Promise<v
     const userId = req.user?.userId;
 
     if (!userId) {
-      res.status(401).json({ message: 'Unauthorized' });
-      return;
+      throw Error('Unauthorized');
     }
 
     if (!post || !text) {
-      res.status(400).json({ message: 'Post and text are required' });
-      return;
+      throw Error('Post and text are required');
     }
 
     if (!isValidObjectId(post)) {
-      res.status(400).json({ message: 'Invalid post id' });
-      return;
+      throw Error('Invalid post id');
     }
 
     const postExists = await Post.exists({ _id: post });
+
     if (!postExists) {
-      res.status(404).json({ message: 'Post not found' });
-      return;
+      throw Error('Post not found');
     }
 
     const comment = await Comment.create({ post, text, user: userId });
     await comment.populate('user', 'username email');
     await comment.populate('post', 'message');
+
     res.status(201).json(comment);
   } catch (err: any) {
     res.status(400).json({ message: err.message });
@@ -46,8 +44,7 @@ export const getComments = async (req: IAuthRequest, res: Response): Promise<voi
     const postId = req.query.post as string;
 
     if (postId && !isValidObjectId(postId)) {
-      res.status(400).json({ message: 'Invalid post id' });
-      return;
+      throw Error('Invalid post id');
     }
 
     const query = postId ? { post: postId } : {};
@@ -55,6 +52,7 @@ export const getComments = async (req: IAuthRequest, res: Response): Promise<voi
       .populate('user', 'username email')
       .populate('post', 'message')
       .sort({ createdAt: -1 });
+
     res.json(comments);
   } catch (err: any) {
     res.status(500).json({ message: err.message });
@@ -64,19 +62,17 @@ export const getComments = async (req: IAuthRequest, res: Response): Promise<voi
 export const getCommentById = async (req: IAuthRequest, res: Response): Promise<void> => {
   const { id } = req.params;
 
-  if (!isValidObjectId(id)) {
-    res.status(400).json({ message: 'Invalid id' });
-    return;
-  }
-
   try {
+    if (!isValidObjectId(id)) {
+      throw Error('Invalid id');
+    }
+
     const comment = await Comment.findById(id)
       .populate('user', 'username email')
       .populate('post', 'message');
 
     if (!comment) {
-      res.status(404).json({ message: 'Comment not found' });
-      return;
+      throw Error('Comment not found');
     }
 
     res.json(comment);
@@ -88,12 +84,11 @@ export const getCommentById = async (req: IAuthRequest, res: Response): Promise<
 export const updateComment = async (req: IAuthRequest, res: Response): Promise<void> => {
   const { id } = req.params;
 
-  if (!isValidObjectId(id)) {
-    res.status(400).json({ message: 'Invalid id' });
-    return;
-  }
-
   try {
+    if (!isValidObjectId(id)) {
+      throw Error('Invalid id');
+    }
+
     const updated = await Comment.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true,
@@ -102,8 +97,7 @@ export const updateComment = async (req: IAuthRequest, res: Response): Promise<v
       .populate('post', 'message');
 
     if (!updated) {
-      res.status(404).json({ message: 'Comment not found' });
-      return;
+      throw Error('Comment not found');
     }
 
     res.json(updated);
@@ -115,17 +109,15 @@ export const updateComment = async (req: IAuthRequest, res: Response): Promise<v
 export const deleteComment = async (req: IAuthRequest, res: Response): Promise<void> => {
   const { id } = req.params;
 
-  if (!isValidObjectId(id)) {
-    res.status(400).json({ message: 'Invalid id' });
-    return;
-  }
-
   try {
+    if (!isValidObjectId(id)) {
+      throw Error('Invalid id');
+    }
+
     const deleted = await Comment.findByIdAndDelete(id);
 
     if (!deleted) {
-      res.status(404).json({ message: 'Comment not found' });
-      return;
+      throw Error('Comment not found');
     }
 
     res.json({ message: 'Comment deleted' });
