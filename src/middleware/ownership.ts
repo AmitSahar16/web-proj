@@ -26,12 +26,13 @@ export const checkPostOwnership = async (
     }
 
     const post = await Post.findById(id);
+
     if (!post) {
       res.status(404).json({ message: 'Post not found' });
       return;
     }
 
-    if (post.user.toString() !== userId) {
+    if (post.user.toString() !== userId.toString()) {
       res.status(403).json({ message: 'Forbidden: You can only modify your own posts' });
       return;
     }
@@ -67,7 +68,7 @@ export const checkCommentOwnership = async (
       return;
     }
 
-    if (comment.user.toString() !== userId) {
+    if (comment.user.toString() !== userId.toString()) {
       res.status(403).json({ message: 'Forbidden: You can only modify your own comments' });
       return;
     }

@@ -1,20 +1,22 @@
 import { Response, NextFunction } from 'express';
 import { IAuthRequest } from '../types';
 import { verifyAccessToken } from '../services/authService';
+import { Types } from 'mongoose';
 
-export const authenticate = (req: IAuthRequest, res: Response, next: NextFunction): void => {
+export const authMiddleware = (req: IAuthRequest, res: Response, next: NextFunction): void => {
   try {
     const authHeader = req.headers.authorization;
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw Error('No token provided');
+      res.sendStatus(401).json({ message: 'No token provided' });
+      return;
     }
 
-    const token = authHeader.substring(7);
+    const token = authHeader.split(' ')[1]; // Bearer <token>
     const decoded = verifyAccessToken(token);
     
     req.user = {
-      userId: decoded.userId,
+      userId: new Types.ObjectId(decoded.userId),
       username: decoded.username,
     };
     

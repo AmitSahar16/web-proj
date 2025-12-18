@@ -1,21 +1,24 @@
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { ITokenPayload } from '../types';
 
-const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'your-access-token-secret';
-const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || 'your-refresh-token-secret';
-const ACCESS_TOKEN_EXPIRY = process.env.ACCESS_TOKEN_EXPIRY || '15m';
-const REFRESH_TOKEN_EXPIRY = process.env.REFRESH_TOKEN_EXPIRY || '7d';
+const ACCESS_TOKEN_SECRET = (process.env.ACCESS_TOKEN_SECRET || 'access-token-secret') as string;
+const REFRESH_TOKEN_SECRET = (process.env.REFRESH_TOKEN_SECRET || 'refresh-token-secret') as string;
+const ACCESS_TOKEN_EXPIRY = (process.env.ACCESS_TOKEN_EXPIRY || '15m') as string;
+const REFRESH_TOKEN_EXPIRY = (process.env.REFRESH_TOKEN_EXPIRY || '7d') as string;
 
-// In-memory store for refresh tokens (in production, use Redis or database)
 const refreshTokens = new Set<string>();
 
 export const generateAccessToken = (payload: ITokenPayload): string => {
-  return jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY });
+  const options: SignOptions = { expiresIn: ACCESS_TOKEN_EXPIRY as SignOptions['expiresIn'] };
+
+  return jwt.sign(payload, ACCESS_TOKEN_SECRET, options);
 };
 
 export const generateRefreshToken = (payload: ITokenPayload): string => {
-  const token = jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRY });
+  const options: SignOptions = { expiresIn: REFRESH_TOKEN_EXPIRY as SignOptions['expiresIn'] };
+  const token = jwt.sign(payload, REFRESH_TOKEN_SECRET, options);
   refreshTokens.add(token);
+
   return token;
 };
 
@@ -27,6 +30,7 @@ export const verifyRefreshToken = (token: string): ITokenPayload => {
   if (!refreshTokens.has(token)) {
     throw new Error('Invalid refresh token');
   }
+  
   return jwt.verify(token, REFRESH_TOKEN_SECRET) as ITokenPayload;
 };
 

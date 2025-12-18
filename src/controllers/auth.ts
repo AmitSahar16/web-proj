@@ -8,14 +8,15 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const { username, email, password }: IUserDTO = req.body;
 
     if (!username || !email || !password) {
-      throw Error('Username, email, and password are required');
+      res.status(400).json({ message: 'Username, email, and password are required' });
+      return;
     }
 
-    // Check if user already exists
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
 
     if (existingUser) {
-      throw Error('User with this email or username already exists');
+      res.status(409).json({ message: 'User with this email or username already exists' });
+      return;
     }
 
     const user = await User.create({ username, email, password });
@@ -49,19 +50,22 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      throw Error('Email and password are required');
+      res.status(400).json({ message: 'Email and password are required' });
+      return;
     }
 
     const user = await User.findOne({ email });
     
     if (!user) {
-      throw Error('Invalid credentials');
+      res.status(400).json({ message: 'Invalid credentials' });
+      return;
     }
 
     const isPasswordValid = await user.comparePassword(password);
 
     if (!isPasswordValid) {
-      throw Error('Invalid credentials');
+      res.status(400).json({ message: 'Invalid credentials' });
+      return;
     }
 
     const tokenPayload = {
@@ -107,7 +111,8 @@ export const refresh = async (req: Request, res: Response): Promise<void> => {
     const { refreshToken } = req.body;
 
     if (!refreshToken) {
-      throw Error('Refresh token is required');
+      res.status(400).json({ message: 'Refresh token is required' });
+      return;
     }
 
     const decoded = verifyRefreshToken(refreshToken);
@@ -115,7 +120,8 @@ export const refresh = async (req: Request, res: Response): Promise<void> => {
     const user = await User.findById(decoded.userId);
 
     if (!user) {
-      throw Error('User not found');
+      res.status(404).json({ message: 'User not found' });
+      return;
     }
 
     const tokenPayload = {
@@ -126,7 +132,6 @@ export const refresh = async (req: Request, res: Response): Promise<void> => {
     const newAccessToken = generateAccessToken(tokenPayload);
     const newRefreshToken = generateRefreshToken(tokenPayload);
 
-    // Revoke old refresh token
     revokeRefreshToken(refreshToken);
 
     const response: IAuthResponse = {

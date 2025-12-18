@@ -6,13 +6,13 @@ import {
   updateComment,
   deleteComment,
 } from '../controllers/comment';
-import { authenticate } from '../middleware/auth';
+import { authMiddleware } from '../middleware/auth';
 import { checkCommentOwnership } from '../middleware/ownership';
 
 const router = express.Router();
 
 // All comment routes require authentication
-router.use(authenticate);
+router.use(authMiddleware);
 
 /**
  * @swagger

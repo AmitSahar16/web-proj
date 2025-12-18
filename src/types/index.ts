@@ -51,7 +51,7 @@ export interface IAuthRequest extends Request {
 }
 
 export interface ITokenPayload {
-  userId: Types.ObjectId;
+  userId: string;
   username: string;
 }
 
@@ -59,7 +59,7 @@ export interface IAuthResponse {
   accessToken: string;
   refreshToken: string;
   user: {
-    id: Types.ObjectId;
+    id: string;
     username: string;
     email: string;
   };

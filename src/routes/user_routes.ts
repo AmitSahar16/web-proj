@@ -1,11 +1,11 @@
 import express from 'express';
 import { createUser, getUsers, getUserById, updateUser, deleteUser } from '../controllers/user';
-import { authenticate } from '../middleware/auth';
+import { authMiddleware } from '../middleware/auth';
 
 const router = express.Router();
 
 // All user routes require authentication
-router.use(authenticate);
+router.use(authMiddleware);
 
 /**
  * @swagger
